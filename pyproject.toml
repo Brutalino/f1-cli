@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "f1-cli"
+version = "0.1.0"
+description = "Formula 1 Live Timing in your Terminal"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "textual>=0.80.0",
+    "rich>=13.0.0",
+    "fastf1>=3.8.0",
+    "signalrcore>=1.0.0",
+]
+
+[project.scripts]
+f1-cli = "f1cli.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["f1cli"]
