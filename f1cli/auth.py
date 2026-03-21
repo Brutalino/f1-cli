@@ -7,7 +7,6 @@ FastF1 uses a browser-based login:
 3. Token is captured via localhost callback
 4. Token is saved to ~/.local/share/fastf1/f1auth.json
 
-We just provide friendly CLI wrappers around this.
 """
 
 from __future__ import annotations
