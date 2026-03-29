@@ -41,11 +41,15 @@ TYRE_STYLES = {
     "WET": ("W", "bold blue"),
 }
 
-def _sector(val, pb, ob):
-    if not val: return Text("")
-    if ob: return Text(val, style="bold magenta")
-    if pb: return Text(val, style="bold green")
-    return Text(val)
+def _sector(val, pb, ob, best_val="", best_ob=False):
+    if val:
+        if ob: return Text(val, style="bold magenta")
+        if pb: return Text(val, style="bold green")
+        return Text(val)
+    if best_val:
+        if best_ob: return Text(best_val, style="magenta dim")
+        return Text(best_val, style="dim")
+    return Text("")
 
 def _lap(val, pb, ob):
     if not val: return Text("")
@@ -135,9 +139,12 @@ def _build_driver_row(drv: DriverTiming, vs: ViewState) -> list:
         row.append(Text(drv.best_lap, style="dim") if drv.best_lap else Text(""))
 
     if vs.show_sectors:
-        row.append(_sector(drv.sector_1, drv.sector_1_personal_best, drv.sector_1_overall_best))
-        row.append(_sector(drv.sector_2, drv.sector_2_personal_best, drv.sector_2_overall_best))
-        row.append(_sector(drv.sector_3, drv.sector_3_personal_best, drv.sector_3_overall_best))
+        row.append(_sector(drv.sector_1, drv.sector_1_personal_best, drv.sector_1_overall_best,
+                           drv.best_sector_1, drv.best_sector_1_overall_best))
+        row.append(_sector(drv.sector_2, drv.sector_2_personal_best, drv.sector_2_overall_best,
+                           drv.best_sector_2, drv.best_sector_2_overall_best))
+        row.append(_sector(drv.sector_3, drv.sector_3_personal_best, drv.sector_3_overall_best,
+                           drv.best_sector_3, drv.best_sector_3_overall_best))
 
     if vs.show_tyres:
         compound = drv.tyre_compound.upper() if drv.tyre_compound else ""

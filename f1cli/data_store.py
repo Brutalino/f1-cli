@@ -37,6 +37,12 @@ class DriverTiming:
     sector_1_overall_best: bool = False
     sector_2_overall_best: bool = False
     sector_3_overall_best: bool = False
+    best_sector_1: str = ""
+    best_sector_2: str = ""
+    best_sector_3: str = ""
+    best_sector_1_overall_best: bool = False
+    best_sector_2_overall_best: bool = False
+    best_sector_3_overall_best: bool = False
     in_pit: bool = False
     pit_out: bool = False
     retired: bool = False
@@ -247,14 +253,23 @@ class DataStore:
                             drv.sector_1 = val
                             drv.sector_1_personal_best = pb
                             drv.sector_1_overall_best = ob
+                            if val:
+                                drv.best_sector_1 = val
+                                drv.best_sector_1_overall_best = ob
                         elif sec_idx == 1:
                             drv.sector_2 = val
                             drv.sector_2_personal_best = pb
                             drv.sector_2_overall_best = ob
+                            if val:
+                                drv.best_sector_2 = val
+                                drv.best_sector_2_overall_best = ob
                         elif sec_idx == 2:
                             drv.sector_3 = val
                             drv.sector_3_personal_best = pb
                             drv.sector_3_overall_best = ob
+                            if val:
+                                drv.best_sector_3 = val
+                                drv.best_sector_3_overall_best = ob
 
             if "InPit" in info:
                 drv.in_pit = info["InPit"] in (True, "true", "True")
@@ -305,7 +320,30 @@ class DataStore:
         lines = data.get("Lines", data)
         if not isinstance(lines, dict):
             return
-        # Mainly used for stats, we already get PB/OB flags from TimingData
+        for num, info in lines.items():
+            if not isinstance(info, dict):
+                continue
+            drv = self._ensure_driver(num)
+            best_sectors = info.get("BestSectors", {})
+            if not isinstance(best_sectors, dict):
+                continue
+            for sec_key, sec_data in best_sectors.items():
+                if not isinstance(sec_data, dict):
+                    continue
+                sec_idx = int(sec_key) if sec_key.isdigit() else -1
+                val = sec_data.get("Value", "")
+                ob = sec_data.get("OverallFastest", False)
+                if not val:
+                    continue
+                if sec_idx == 0:
+                    drv.best_sector_1 = val
+                    drv.best_sector_1_overall_best = ob
+                elif sec_idx == 1:
+                    drv.best_sector_2 = val
+                    drv.best_sector_2_overall_best = ob
+                elif sec_idx == 2:
+                    drv.best_sector_3 = val
+                    drv.best_sector_3_overall_best = ob
 
     def _handle_clock(self, data: dict, ts: str):
         """ExtrapolatedClock provides the session countdown timer."""
